@@ -5,10 +5,27 @@ import Button from "../ui/Button";
 import { useEffect, useState } from "react";
 
 export default function Hero() {
+  const [isClient, setIsClient] = useState(false);
+  const [windowHeight, setWindowHeight] = useState(0);
   const [bubbles, setBubbles] = useState([]);
+
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClient(true);
+    setWindowHeight(window.innerHeight);
+
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Generate initial bubbles - MORE VISIBLE
   useEffect(() => {
+    if (!isClient) return;
+
     const initialBubbles = Array.from({ length: 20 }).map((_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -19,7 +36,7 @@ export default function Hero() {
       opacity: Math.random() * 0.6 + 0.4, // Higher opacity
     }));
     setBubbles(initialBubbles);
-  }, []);
+  }, [isClient]);
 
   // Generate random positions for stars
   const stars = Array.from({ length: 25 }).map((_, i) => ({
@@ -41,6 +58,37 @@ export default function Hero() {
     delay: Math.random() * 4,
     duration: Math.random() * 4 + 3,
   }));
+
+  // Don't render animations on server
+  if (!isClient) {
+    return (
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-blue-50/30 min-h-[80vh]">
+        {/* Simple static content for server */}
+        <div className="relative max-w-[120rem] mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-start">
+          <div className="max-md:mt-[-20px] max-md:flex max-md:flex-col max-md:items-center max-md:text-center">
+            <h1 className="text-3xl md:text-[54px] font-semibold text-slate-800 leading-normal">
+              আপনার সন্তানের ভবিষ্যতের পুঁজি হোক নতুন স্কিল
+            </h1>
+            <p className="mt-5 text-slate-600 max-w-lg text-[18px] md:text-[26px]">
+              ৫-১২ বছর বয়সী শিশুদের জন্য ইন্টারেক্টিভ পাঠ এবং কার্যকলাপগুলি
+              অন্বেষণ করুন।
+            </p>
+            <div className="mt-8 flex gap-4 font-anek-bangla">
+              <Button>শুরু করুন</Button>
+              <Button variant="outline">কোর্সসমূহ দেখুন</Button>
+            </div>
+          </div>
+          <div>
+            <img
+              src="/islamic/hero-bg.png"
+              alt="kids learning"
+              className="w-[900px] h-auto"
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-blue-50/30 min-h-[80vh]">
@@ -148,7 +196,7 @@ export default function Hero() {
               }}
               initial={{ y: 0, x: 0, scale: 0.8, opacity: 0 }}
               animate={{
-                y: -window.innerHeight - 200, // Go all the way up
+                y: -windowHeight - 200, // Go all the way up
                 x: Math.sin(i * 0.5) * 30, // Wave motion
                 scale: [0.8, 1, 1.1, 0.9],
                 opacity: [0, 0.9, 0.7, 0],
@@ -183,7 +231,7 @@ export default function Hero() {
                 `,
               }}
               animate={{
-                y: -window.innerHeight - 100,
+                y: -windowHeight - 100,
                 x: Math.sin(i * 0.3) * 20,
                 opacity: [0, 0.8, 0.6, 0],
               }}
@@ -210,7 +258,7 @@ export default function Hero() {
               boxShadow: "0 0 10px rgba(135, 206, 235, 0.9)",
             }}
             animate={{
-              y: -window.innerHeight - 50,
+              y: -windowHeight - 50,
               x: Math.random() * 30 - 15,
               opacity: [0, 1, 0.8, 0],
             }}
@@ -250,7 +298,7 @@ export default function Hero() {
               `,
             }}
             animate={{
-              y: -window.innerHeight,
+              y: -windowHeight,
               x: [0, 10, -10, 0],
               scale: [0.9, 1.1, 1, 1.2],
               opacity: [0, 1, 0.8, 0],
