@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Noto+Serif+Bengali:wght@100..900&family=Quicksand:wght@300..700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-white text-slate-800;
+  font-family: var(--font-anek-bangla);
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold;
+  font-family: var(--font-anek-bangla);
+}
+
+p {
+  @apply leading-relaxed;
+  font-family: var(--font-anek-bangla);
+}
+:root {
+  --font-anek-bangla: "Anek Bangla", sans-serif;
+  --font-noto-serif-bengali: "Noto Serif Bengali", serif;
+  --font-quicksand: "Quicksand", sans-serif;
+}
+
+.font-anek-bangla {
+  font-family: var(--font-anek-bangla);
+}
+.font-noto-serif-bengali {
+  font-family: var(--font-noto-serif-bengali);
+}
+.font-quicksand {
+  font-family: var(--font-quicksand);
+}
