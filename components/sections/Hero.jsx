@@ -365,7 +365,7 @@ export default function Hero() {
           transition={{ duration: 0.7 }}
           className="max-md:mt-[-20px] max-md:flex max-md:flex-col max-md:items-center max-md:text-center"
         >
-          <h1 className="text-3xl md:text-[54px] font-semibold text-slate-800 leading-normal font relative z-30">
+          <h1 className="text-3xl max-md:mt-20 mt-28 md:text-[54px] font-semibold text-slate-800 leading-normal font relative z-30">
             আপনার সন্তানের ভবিষ্যতের পুঁজি হোক নতুন স্কিল
             {/* Bubble near text */}
             <motion.div

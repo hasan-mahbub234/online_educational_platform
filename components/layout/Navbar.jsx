@@ -1,67 +1,111 @@
+// Header.jsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { ShoppingCart, User } from "lucide-react";
+import HamburgerButton from "../ui/HamburgerButton";
 import Button from "../ui/Button";
-import { Menu, X } from "lucide-react";
 
-export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const headerRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
-  const menu = [
-    {
-      name: "হোম",
-      link: "#",
-    },
-    {
-      name: "কোর্সসমূহ",
-      link: "#",
-    },
-    {
-      name: "আমাদের সম্পর্কে",
-      link: "#",
-    },
-    {
-      name: "যোগাযোগ",
-      link: "#",
-    },
-  ];
+  // Close mobile menu on outside click or ESC
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        headerRef.current &&
+        !headerRef.current.contains(event.target)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [isMobileMenuOpen]);
+
+  // Lock body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  // Static white header style
+  const headerStyle = {
+    bg: "rgba(255, 255, 255, 0.95)",
+    border: "rgb(0, 0, 0)",
+    text: "#111827",
+    mobileMenuBg: "rgba(255, 255, 255, 0.97)",
+  };
+
+  const NavLink = ({ href, children }) => (
+    <a
+      href={href}
+      className="text-md font-semibold transition-all duration-300 relative group"
+      style={{ color: headerStyle.text }}
+    >
+      <span className="relative">
+        {children}
+        <span className="absolute left-1/2 -bottom-1 h-[1px] w-0 bg-current transform -translate-x-1/2 transition-all duration-500 group-hover:w-full" />
+      </span>
+    </a>
+  );
 
   return (
-    <div className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 max-md:py-4 md:py-6">
-        <div className="max-md:text-[22px] md:text-[30px] font-bold text-slate-800 flex items-center gap-2">
-          <p>Futuristic</p> <p className="text-orange-600">Kids</p>
-        </div>
+    <>
+      {/* Header */}
+      <header
+        ref={headerRef}
+        className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur transition-all duration-300"
+        style={{
+          backgroundColor: headerStyle.bg,
+          borderBottom: `1px solid ${headerStyle.border}`,
+          color: headerStyle.text,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div className="max-w-[1350px] mx-auto px-4 sm:px-6 py-2 lg:py-6 flex items-center justify-between">
+          {/* Mobile Hamburger */}
+          <div className="flex-none lg:hidden">
+            <HamburgerButton
+              isMenuOpen={isMobileMenuOpen}
+              setIsMenuOpen={setIsMobileMenuOpen}
+              barColor={headerStyle.text}
+              className="p-2"
+            />
+          </div>
+          <div className="max-md:text-[22px] md:text-[30px] font-bold text-slate-800 flex items-center gap-2">
+            <p>Futuristic</p> <p className="text-orange-600">Kids</p>
+          </div>
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center font-anek-bangla">
+            <NavLink href="#">হোম</NavLink>
+            <NavLink href="#">কোর্সসমূহ</NavLink>
+            <NavLink href="#">আমাদের সম্পর্কে</NavLink>
+            <NavLink href="#">যোগাযোগ</NavLink>
+            <NavLink href="#">Outdoor</NavLink>
+          </nav>
 
-        {/* Desktop Menu */}
-        <div className="hidden lg:flex gap-10 text-slate-600">
-          {menu.map((item, index) => (
-            <a
-              key={index}
-              href={item.link}
-              className="font-anek-bangla hover:text-slate-900 font-medium text-[22px] text-slate-700"
-            >
-              {item.name}
-            </a>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2 rounded-lg bg-orange-100 hover:bg-orange-200 transition-colors shadow-md"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {isMenuOpen ? (
-              <X className="w-6 h-6 text-slate-700" />
-            ) : (
-              <Menu className="w-7 h-7 text-slate-700" />
-            )}
-          </button>
-
-          {/* Buttons */}
-          <div className="flex gap-3 max-lg:hidden">
+          {/* Icons */}
+          <div className="flex gap-3 ">
             <Button
               variant="outline"
               className="max-md:px-2 max-md:py-1 max-md:text-[12px]"
@@ -73,71 +117,40 @@ export default function Navbar() {
             </Button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-40 md:hidden"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
-
-      {/* Mobile Menu Panel */}
+      {/* Mobile Menu */}
       <div
-        className={`lg:hidden fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out ${
-          isMenuOpen ? "translate-y-0" : "-translate-y-full"
+        ref={mobileMenuRef}
+        className={`fixed top-0 left-0 w-full z-40 backdrop-blur-md transition-transform duration-500 lg:hidden ${
+          isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
+        style={{
+          backgroundColor: headerStyle.mobileMenuBg,
+          paddingTop: "80px",
+          borderBottom: `1px solid ${headerStyle.border}`,
+        }}
       >
-        <div className="bg-white/95 backdrop-blur-2xl shadow-lg rounded-b-2xl border-b">
-          {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between p-6 border-b">
-            <div className="text-[22px] font-bold text-slate-800 flex items-center gap-2">
-              <p>Futuristic</p> <p className="text-orange-600">Kids</p>
-            </div>
-            <button
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-              aria-label="Close menu"
+        <nav className="flex flex-col gap-4 py-4 font-semibold text-lg">
+          {[
+            "Living Room",
+            "Bedroom",
+            "Dining",
+            "Office",
+            "Outdoor",
+            "Contact",
+          ].map((item) => (
+            <a
+              key={item}
+              href="#"
+              className="pl-6 "
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              <X className="w-6 h-6 text-slate-700" />
-            </button>
-          </div>
-
-          {/* Mobile Menu Items */}
-          <div className="p-6 space-y-6">
-            {menu.map((item, index) => (
-              <a
-                key={index}
-                href={item.link}
-                className="block font-anek-bangla font-medium text-[18px] text-slate-700 hover:text-slate-900 hover:bg-gray-50/50 p-3 rounded-lg transition-all"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.name}
-              </a>
-            ))}
-          </div>
-
-          {/* Mobile Menu Buttons */}
-          <div className="p-6 border-t">
-            <div className="flex flex-col gap-3">
-              <Button
-                variant="outline"
-                className="w-full justify-center py-3"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                লগইন
-              </Button>
-              <Button
-                className="w-full justify-center py-3"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                রেজিস্ট্রার
-              </Button>
-            </div>
-          </div>
-        </div>
+              {item}
+            </a>
+          ))}
+        </nav>
       </div>
-    </div>
+    </>
   );
 }
